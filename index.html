@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beacon Guild - Officer Application</title>
+    <style>
+        body {
+            background-color: #0f0000;
+            color: #ffaaaa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 0, 0, 0.85);
+            padding: 30px;
+            border: 2px solid #800000;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #ff3333;
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 0 0 10px #800000;
+        }
+        h2 {
+            color: #ff6666;
+            border-bottom: 2px solid #800000;
+            padding-bottom: 10px;
+        }
+        p {
+            font-size: 1.1em;
+        }
+        form {
+            background: #1a0000;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #600000;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff9999;
+        }
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            background: #330000;
+            border: 1px solid #800000;
+            color: #ffcccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        button {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #800000;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff3333;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.2em;
+            color: #ff6666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://media.discordapp.net/attachments/1458843592029376715/1458946691804823562/2897_mc_beacon.png?ex=69617d7d&is=69602bfd&hm=bfd27277cd3f5621137fa911e365362587b75f6f77fd59df6f001962795111d6&=&format=webp&quality=lossless&width=450&height=450" alt="Beacon Logo">
+            <h1>Beacon</h1>
+            <p>For the Horde!</p>
+        </header>
+        <h2>Welcome to Beacon</h2>
+        <p>Beacon is a relaxed, community-focused Horde guild on World of Warcraft Classic. We enjoy casual adventures, light raiding, quests, and good company—no pressure, just fun and camaraderie.</p>
+       
+        <p>
+            We are currently accepting applications for leadership roles to help shape our guild's future.
+            Available positions include <strong>Sergeant</strong>, <strong>Lieutenant</strong>,
+            <strong>Captain</strong>, and other officer-level roles.
+        </p>
+        <h2>Officer Application</h2>
+        <p>Please fill out the form below. We value enthusiasm, reliability, and a friendly attitude over hardcore experience.</p>
+        
+        <form id="application-form">
+            <label for="position">Position Applying For</label>
+            <select id="position" name="position" required>
+                <option value="">Select a position...</option>
+                <option value="Sergeant">Sergeant</option>
+                <option value="Lieutenant">Lieutenant</option>
+                <option value="Captain">Captain</option>
+                <option value="Other">Other (specify in message)</option>
+            </select>
+            <label for="charname">Character Name</label>
+            <input type="text" id="charname" name="charname" required>
+            <label for="class">Class and Spec (e.g., "Protection Warrior")</label>
+            <input type="text" id="class" name="class" required>
+            <label for="battletag">BattleTag (for whispers/adds)</label>
+            <input type="text" id="battletag" name="battletag" required>
+            <label for="discord">Discord Tag (highly recommended)</label>
+            <input type="text" id="discord" name="discord">
+            <label for="experience">Previous Guild/Leadership Experience (if any)</label>
+            <textarea id="experience" name="experience"></textarea>
+            <label for="why">Why do you want to be an officer in Beacon?</label>
+            <textarea id="why" name="why" required></textarea>
+            <label for="bring">What strengths or ideas would you bring to the guild?</label>
+            <textarea id="bring" name="bring" required></textarea>
+            <label for="availability">Typical play times/availability</label>
+            <textarea id="availability" name="availability"></textarea>
+            <label for="extra">Anything else you'd like us to know?</label>
+            <textarea id="extra" name="extra"></textarea>
+            <button type="submit">Submit Application</button>
+            <div id="status"></div>
+        </form>
+        
+        <div class="footer">
+            <p>Lok'tar ogar! Victory through friendship.</p>
+            <p>Applications are reviewed privately by current officers.</p>
+        </div>
+    </div>
+
+    <script>
+        const webhookUrl = 'https://discord.com/api/webhooks/1458947178784620577/X6B3oyKa1kjHOf6BnVDorZT6Vrilcwad9KYikyyIFmnFQ9luFHuQSSalBd1UrWnKB7uS';
+
+        document.getElementById('application-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const status = document.getElementById('status');
+            status.innerHTML = '<p style="color: #ffaaaa;">Submitting application...</p>';
+
+            const form = e.target;
+            const data = {
+                position: form.position.value,
+                charname: form.charname.value,
+                class: form.class.value,
+                battletag: form.battletag.value,
+                discord: form.discord.value || 'Not provided',
+                experience: form.experience.value || 'None mentioned',
+                why: form.why.value,
+                bring: form.bring.value,
+                availability: form.availability.value || 'Not specified',
+                extra: form.extra.value || 'Nothing additional'
+            };
+
+            const embed = {
+                title: 'New Officer Application - Beacon Guild',
+                color: 0xC41F3B, // Classic Horde red
+                fields: [
+                    { name: 'Position', value: data.position, inline: true },
+                    { name: 'Character Name', value: data.charname, inline: true },
+                    { name: 'Class/Spec', value: data.class, inline: true },
+                    { name: 'BattleTag', value: data.battletag, inline: true },
+                    { name: 'Discord', value: data.discord, inline: true },
+                    { name: 'Previous Experience', value: data.experience, inline: false },
+                    { name: 'Why Officer?', value: data.why, inline: false },
+                    { name: 'Strengths/Ideas', value: data.bring, inline: false },
+                    { name: 'Availability', value: data.availability, inline: false },
+                    { name: 'Extra Info', value: data.extra, inline: false }
+                ],
+                timestamp: new Date().toISOString(),
+                footer: { text: 'For the Horde!' },
+                thumbnail: {
+                    url: 'https://media.discordapp.net/attachments/1458843592029376715/1458946691804823562/2897_mc_beacon.png?ex=69617d7d&is=69602bfd&hm=bfd27277cd3f5621137fa911e365362587b75f6f77fd59df6f001962795111d6&=&format=webp&quality=lossless&width=450&height=450'
+                }
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+
+                if (response.ok) {
+                    status.innerHTML = '<p style="color: #00ff00;">Application submitted successfully! Thank you — an officer will review it soon.</p>';
+                    form.reset();
+                } else {
+                    status.innerHTML = '<p style="color: #ff0000;">Error submitting. Please try again or whisper an officer in-game.</p>';
+                }
+            } catch (err) {
+                status.innerHTML = '<p style="color: #ff0000;">Connection error. Please try again later.</p>';
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
