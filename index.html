@@ -84,13 +84,19 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-        button:hover {
+        button:hover:not(:disabled) {
             background: #ff3333;
+        }
+        button:disabled {
+            background: #400000;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
         #status {
             margin-top: 20px;
             text-align: center;
             font-weight: bold;
+            min-height: 30px;
         }
         .footer {
             text-align: center;
@@ -115,6 +121,9 @@
             Available positions include <strong>Sergeant</strong>, <strong>Lieutenant</strong>,
             <strong>Captain</strong>, and other officer-level roles.
         </p>
+
+        <p><strong>Note:</strong> Only one application per player/IP address is allowed. Duplicate applications will be automatically ignored.</p>
+
         <h2>Officer Application</h2>
         <p>Please fill out the form below. We value enthusiasm, reliability, and a friendly attitude over hardcore experience.</p>
         
@@ -157,14 +166,38 @@
 
     <script>
         const webhookUrl = 'https://discord.com/api/webhooks/1458947178784620577/X6B3oyKa1kjHOf6BnVDorZT6Vrilcwad9KYikyyIFmnFQ9luFHuQSSalBd1UrWnKB7uS';
+        const STORAGE_KEY = 'beacon_officer_applied';
 
-        document.getElementById('application-form').addEventListener('submit', async (e) => {
+        const form = document.getElementById('application-form');
+        const status = document.getElementById('status');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        // Check if already submitted (browser-based prevention)
+        if (localStorage.getItem(STORAGE_KEY) === 'true') {
+            status.innerHTML = '<p style="color: #ff6666;">You have already submitted an application from this browser. Only one application per player is allowed. If you believe this is an error or need to update your application, please whisper an officer in-game.</p>';
+            submitButton.disabled = true;
+            form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+        }
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const status = document.getElementById('status');
+
+            if (localStorage.getItem(STORAGE_KEY) === 'true') return; // Double-check
+
             status.innerHTML = '<p style="color: #ffaaaa;">Submitting application...</p>';
 
-            const form = e.target;
+            // Fetch IP address (for duplicate detection on officer side)
+            let ip = 'Unknown';
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                if (ipResponse.ok) {
+                    const ipData = await ipResponse.json();
+                    ip = ipData.ip;
+                }
+            } catch (err) {
+                console.error('Failed to fetch IP:', err);
+            }
+
             const data = {
                 position: form.position.value,
                 charname: form.charname.value,
@@ -175,13 +208,15 @@
                 why: form.why.value,
                 bring: form.bring.value,
                 availability: form.availability.value || 'Not specified',
-                extra: form.extra.value || 'Nothing additional'
+                extra: form.extra.value || 'Nothing additional',
+                ip: ip
             };
 
             const embed = {
                 title: 'New Officer Application - Beacon Guild',
-                color: 0xC41F3B, // Classic Horde red
+                color: 0xC41F3B, // Horde red
                 fields: [
+                    { name: 'IP Address', value: data.ip, inline: true },
                     { name: 'Position', value: data.position, inline: true },
                     { name: 'Character Name', value: data.charname, inline: true },
                     { name: 'Class/Spec', value: data.class, inline: true },
@@ -209,7 +244,9 @@
 
                 if (response.ok) {
                     status.innerHTML = '<p style="color: #00ff00;">Application submitted successfully! Thank you — an officer will review it soon.</p>';
-                    form.reset();
+                    localStorage.setItem(STORAGE_KEY, 'true'); // Prevent future submissions from this browser
+                    submitButton.disabled = true;
+                    form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
                 } else {
                     status.innerHTML = '<p style="color: #ff0000;">Error submitting. Please try again or whisper an officer in-game.</p>';
                 }
